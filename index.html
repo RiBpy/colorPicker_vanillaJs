@@ -26,9 +26,14 @@
       <section class="section">
         <section class="section-header">
           <h3 class="section-title">Change & Copy Color</h3>
-          <button class="section-header-action" id="copy-to-clipboard">
-            Copy To Clipboard
-          </button>
+          <div class="button">
+            <button class="section-header-action" id="save-to-custom">
+              Save
+            </button>
+            <button class="section-header-action" id="copy-to-clipboard">
+              Copy
+            </button>
+
         </section>
         <div class="divider"></div>
         <div class="select-copy-mode">
@@ -132,6 +137,15 @@
         </div>
         <div class="divider"></div>
         <div class="preset-colors" id="preset-colors"></div>
+      </section>
+
+      <!-- color palate  -->
+      <section class="section">
+        <div class="section-header">
+          <h3 class="section-title">Custom Colors</h3>
+        </div>
+        <div class="divider"></div>
+        <div class="custom-colors" id="custom-colors"></div>
       </section>
     </div>
   </body>

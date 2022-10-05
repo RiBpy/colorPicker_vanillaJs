@@ -5,6 +5,8 @@ const defaultColor = {
 	green: 222,
 	blue: 222,
 };
+let customColors=new Array(24)
+  
 const defaultPresetColors = [
 	'#ffcdd2',
 	'#f8bbd0',
@@ -37,6 +39,11 @@ window.onload=()=>{
     main()
     updateColorCodeToDom(defaultColor)
     displayAllColorBoxes(document.getElementById("preset-colors"),defaultPresetColors)
+    let customColorsStorage=localStorage.getItem("customColors")
+    if(customColorsStorage){
+        customColors=JSON.parse(customColorsStorage)
+        displayAllColorBoxes(document.getElementById('custom-colors'),customColors)
+    }
     }
     
 /**
@@ -51,9 +58,10 @@ window.onload=()=>{
     const colorSliderRed=document.getElementById("color-slider-red")
     const colorSliderGreen=document.getElementById("color-slider-green")
     const colorSliderBlue=document.getElementById("color-slider-blue")
-    const colorModeHex=document.getElementById("color-mode-hex")
     const colorMode=document.getElementsByName("color-mode")
-    let presetColor=document.getElementById("preset-colors")
+    let presetColorParent=document.getElementById("preset-colors")
+    let customColorParent=document.getElementById("custom-colors")
+    let saveTocCustomBtn=document.getElementById("save-to-custom")
     //Event Listener
     randomColorBtn.addEventListener("click",()=>{
        handleRandomColorBtn()
@@ -70,8 +78,10 @@ copyToClipboardBtn.addEventListener("click" ,()=>{
     handleCopyToClipboardBtn(colorMode,hexCodeHolder,rgbCodeHolder)
 })
 
-presetColor.addEventListener("click",()=>handlePresetColorCopy(event))
-    
+presetColorParent.addEventListener("click",()=>handlePresetColorCopy(event))
+customColorParent.addEventListener("click",()=>handlePresetColorCopy(event))
+saveTocCustomBtn.addEventListener("click",()=>handleSaveToCustomBtn(customColorParent,hexCodeHolder))
+
 }
 
 
@@ -168,7 +178,6 @@ const handleHexCodeHolder=(e)=>{
 }
 const handleColorSlider=(colorSliderRed,colorSliderGreen,colorSliderBlue)=>{
     return function(){
-        console.log("hiiiiiii")
         const color={
             //input value always come in string to convert it into decimal we use parseInt.
             red:parseInt(colorSliderRed.value),
@@ -216,6 +225,19 @@ const handlePresetColorCopy=(event)=>{
         copySound.play();
     }
 }
+const handleSaveToCustomBtn=(parent,hexInp)=>{
+    let color=`#${hexInp.value}`
+    if(customColors.includes(color))return 
+    customColors.unshift(color)//set last integration in first
+    if(customColors.length>24){
+        customColors=customColors.slice(0,24)//just latest 24 colors will be there
+    }
+    removeChildColors(parent)
+    displayAllColorBoxes(parent,customColors)
+    localStorage.setItem("customColors",JSON.stringify(customColors));
+   
+}
+
 //DOM manipulation
 /**
  * msg string will be given where this generateMsg is being called.
@@ -274,10 +296,20 @@ let generateColorBox=(color)=>{
  */
 let displayAllColorBoxes=(parent,colors)=>{
     colors.forEach(color=>{
-    const colorBox=generateColorBox(color)
+    //if color valid color is not present box may generate if array size if fixed.
+    if(isValidHex(color.slice(1))){//isValidHex hex expects only 6 digit but randomly we generate with # so # need to be removed.
+        const colorBox=generateColorBox(color)
     parent.appendChild(colorBox)
+    }
     })
 }
+
+let removeChildColors=(parent)=>{
+    while (parent.hasChildNodes()) {
+        parent.removeChild(parent.firstChild);
+      }
+}
+
 /**
  * check if input value is hex code or not
  @param {string} color //to set color as string..this will suggest all string method

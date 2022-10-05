@@ -36,6 +36,7 @@ body {
 }
 
 .section-header-action {
+  margin-left: 10px;
   display: inline-block;
   border: none;
   border-radius: 0.15rem;
@@ -215,7 +216,8 @@ label {
 }
 
 /* color palate */
-.preset-colors {
+.preset-colors,
+.custom-colors {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
