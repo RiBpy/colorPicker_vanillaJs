@@ -1,13 +1,44 @@
-window.onload=()=>{
-main()
-}
-
-
 //global value
 let div=null;
+const defaultColor = {
+	red: 222,
+	green: 222,
+	blue: 222,
+};
+const defaultPresetColors = [
+	'#ffcdd2',
+	'#f8bbd0',
+	'#e1bee7',
+	'#ff8a80',
+	'#ff80ab',
+	'#ea80fc',
+	'#b39ddb',
+	'#9fa8da',
+	'#90caf9',
+	'#b388ff',
+	'#8c9eff',
+	'#82b1ff',
+	'#03a9f4',
+	'#00bcd4',
+	'#009688',
+	'#80d8ff',
+	'#84ffff',
+	'#a7ffeb',
+	'#c8e6c9',
+	'#dcedc8',
+	'#f0f4c3',
+	'#b9f6ca',
+	'#ccff90',
+	'#ffcc80',
+];
+const copySound = new Audio('./copy-sound.wav');
 
-
-
+window.onload=()=>{
+    main()
+    updateColorCodeToDom(defaultColor)
+    displayAllColorBoxes(document.getElementById("preset-colors"),defaultPresetColors)
+    }
+    
 /**
  *This function will load all data need for color picker to work.It will be loaded when window will open;
  */
@@ -22,7 +53,7 @@ let div=null;
     const colorSliderBlue=document.getElementById("color-slider-blue")
     const colorModeHex=document.getElementById("color-mode-hex")
     const colorMode=document.getElementsByName("color-mode")
-
+    let presetColor=document.getElementById("preset-colors")
     //Event Listener
     randomColorBtn.addEventListener("click",()=>{
        handleRandomColorBtn()
@@ -36,66 +67,11 @@ colorSliderRed.addEventListener("change", handleColorSlider(colorSliderRed,color
 colorSliderGreen.addEventListener("change", handleColorSlider(colorSliderRed,colorSliderGreen,colorSliderBlue))
 colorSliderBlue.addEventListener("change", handleColorSlider(colorSliderRed,colorSliderGreen,colorSliderBlue))
 copyToClipboardBtn.addEventListener("click" ,()=>{
-   let mode =getCheckedRadio(colorMode)
-   if(mode===null){
-    throw new Error("No Selected")
-   }else if(mode==="hex"){
-    navigator.clipboard.writeText(`#${hexCodeHolder.value}`)
-        if(div!==null){
-            div.remove()
-            div=null;
-        }
-        if(isValidHex(hexCodeHolder.value)){
-                    generateMsg(`#${hexCodeHolder.value} Copied`)
-                }else{
-                    alert("Please Provide valid hex code")
-                }
-   }else{
-    navigator.clipboard.writeText(`${rgbCodeHolder.value}`)
-            if(div!==null){
-                div.remove()
-                div=null;
-            }
-            if(isValidHex(hexCodeHolder.value)){
-                        generateMsg(`${rgbCodeHolder.value} Copied`)
-                    }else{
-                        alert("Please Provide valid rgb code")
-                    }
-   }
+    handleCopyToClipboardBtn(colorMode,hexCodeHolder,rgbCodeHolder)
 })
 
-    //copy button
+presetColor.addEventListener("click",()=>handlePresetColorCopy(event))
     
-
-        // if(colorModeHex.checked){
-        //     copyBtn.addEventListener("click",()=>{
-        //     navigator.clipboard.writeText(`#${hexCodeHolder.value}`)
-        //     if(div!==null){
-        //         div.remove()
-        //         div=null;
-        //     }
-        //    if(isValidHex(hexCodeHolder.value)){
-        //         generateMsg(`#${hexCodeHolder.value} Copied`)
-        //     }else{
-        //         alert("Please Provide valid rgb code")
-        //     }
-        // })
-        // }else{
-        //     copyBtn.addEventListener("click",()=>{
-        //         navigator.clipboard.writeText(`${rgbCodeHolder.value}`)
-        //         if(div!==null){
-        //             div.remove()
-        //             div=null;
-        //         }
-        //        if(isValidHex(hexCodeHolder.value)){
-        //             generateMsg(`${rgbCodeHolder.value} Copied`)
-        //         }else{
-        //             alert("Please Provide valid rgb code")
-        //         }
-        //     })
-        
-        // }
-        
 }
 
 
@@ -203,7 +179,43 @@ const handleColorSlider=(colorSliderRed,colorSliderGreen,colorSliderBlue)=>{
     }
 }
 
+const handleCopyToClipboardBtn=(colorMode,hexCodeHolder,rgbCodeHolder)=>{
+    let mode =getCheckedRadio(colorMode)
+   if(mode===null){
+    throw new Error("No Selected")
+   }else if(mode==="hex"){
+    navigator.clipboard.writeText(`#${hexCodeHolder.value}`)
+        if(div!==null){
+            div.remove()
+            div=null;
+        }
+        if(isValidHex(hexCodeHolder.value)){
+                    generateMsg(`#${hexCodeHolder.value} Copied`)
+                }else{
+                    alert("Please Provide valid hex code")
+                }
+   }else{
+    navigator.clipboard.writeText(`${rgbCodeHolder.value}`)
+            if(div!==null){
+                div.remove()
+                div=null;
+            }
+            if(isValidHex(hexCodeHolder.value)){
+                        generateMsg(`${rgbCodeHolder.value} Copied`)
+                    }else{
+                        alert("Please Provide valid rgb code")
+                    }
+   }
+}
 
+const handlePresetColorCopy=(event)=>{
+    let child=event.target
+    if(child.className==="color-box"){
+        navigator.clipboard.writeText(child.getAttribute("data-color"))
+        copySound.volume=.2;
+        copySound.play();
+    }
+}
 //DOM manipulation
 /**
  * msg string will be given where this generateMsg is being called.
@@ -232,6 +244,7 @@ const generateMsg=(msg)=>{
  */
 const getCheckedRadio=(nodes)=>{
 let checkedValue=null;
+//if there are more radio button check which one is checked
 for(let i=0; i<nodes.length;i++){
     if(nodes[i].checked){
         checkedValue=nodes[i].value;
@@ -240,7 +253,31 @@ for(let i=0; i<nodes.length;i++){
 }
 return checkedValue;
 }
-
+/**
+ * will generate a color box
+ * @param {string} color 
+ * @returns {object}
+ */
+let generateColorBox=(color)=>{
+   
+    let div=document.createElement("div")
+    div.className="color-box";
+    div.style.backgroundColor=color
+    //to keep color data in dom (copy purpose)
+    div.setAttribute("data-color",color)
+   return div;
+}
+/**
+ * 
+ * @param {object} parent 
+ * @param {array} colors 
+ */
+let displayAllColorBoxes=(parent,colors)=>{
+    colors.forEach(color=>{
+    const colorBox=generateColorBox(color)
+    parent.appendChild(colorBox)
+    })
+}
 /**
  * check if input value is hex code or not
  @param {string} color //to set color as string..this will suggest all string method

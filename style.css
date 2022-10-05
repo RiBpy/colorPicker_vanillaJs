@@ -175,7 +175,7 @@ label {
   z-index: 999;
   top: 2rem;
   right: 2rem;
-  background-color: rgb(19, 201, 110);
+  background-color: rgb(69, 106, 86);
   color: #fff;
   border: 1px solid #fff;
   border-radius: 0.25rem;
@@ -212,4 +212,26 @@ label {
     transform: translateX(200px);
     opacity: 0;
   }
+}
+
+/* color palate */
+.preset-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: flex-start;
+  padding: 1rem 0;
+}
+
+.color-box {
+  width: 75px;
+  height: 30px;
+  border-radius: 0.15rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.color-box:hover {
+  opacity: 0.9;
+  box-shadow: 0px 1px 4px 0 rgba(0, 0, 0, 0.2);
 }
