@@ -62,6 +62,13 @@ window.onload=()=>{
     let presetColorParent=document.getElementById("preset-colors")
     let customColorParent=document.getElementById("custom-colors")
     let saveTocCustomBtn=document.getElementById("save-to-custom")
+    let bgPreview=document.getElementById("bg-preview")
+    let bgFileInput=document.getElementById('bg-file-input')
+    let bgFileInputBtn=document.getElementById('bg-file-input-btn')
+    let bgFileDeleteBtn=document.getElementById('bg-file-delete-btn')
+    bgFileDeleteBtn.style.display="none"
+    let bgController=document.getElementById("bg-controller");
+    bgController.style.display="none"
     //Event Listener
     randomColorBtn.addEventListener("click",()=>{
        handleRandomColorBtn()
@@ -81,6 +88,19 @@ copyToClipboardBtn.addEventListener("click" ,()=>{
 presetColorParent.addEventListener("click",()=>handlePresetColorCopy(event))
 customColorParent.addEventListener("click",()=>handlePresetColorCopy(event))
 saveTocCustomBtn.addEventListener("click",()=>handleSaveToCustomBtn(customColorParent,hexCodeHolder))
+bgFileInputBtn.addEventListener("click",()=>{
+    bgFileInput.click();
+})
+bgFileInput.addEventListener("change",(event)=>{
+   handleBgFileInput(event,bgPreview,bgFileDeleteBtn,bgController)
+})
+bgFileDeleteBtn.addEventListener("click",()=>{
+    handleBgFileDeleteBtn(bgPreview,bgController)
+})
+document.getElementById("bg-size").addEventListener("change",bgControllerFunc)
+document.getElementById("bg-repeat").addEventListener("change",bgControllerFunc)
+document.getElementById("bg-position").addEventListener("change",bgControllerFunc)
+document.getElementById("bg-attachment").addEventListener("change",bgControllerFunc)
 
 }
 
@@ -238,6 +258,25 @@ const handleSaveToCustomBtn=(parent,hexInp)=>{
    
 }
 
+const handleBgFileInput=(event,bgPreview,bgFileDeleteBtn,bgController)=>{
+    const file=event.target.files[0];
+    const imgUrl=URL.createObjectURL(file)
+    bgPreview.style.background=`url(${imgUrl})`//as css url property
+   document.body.style.background=`url(${imgUrl})`
+   bgFileDeleteBtn.style.display="block";
+   bgController.style.display="block";
+}
+
+const handleBgFileDeleteBtn=(bgPreview,bgController)=>{
+    bgPreview.style.background="none"
+    bgPreview.style.backgroundColor="#dddeee"
+    document.body.style.background="none"
+    document.body.style.backgroundColor="#dddeee"
+    bgController.style.display="none"
+    //to clear bg input holder ,or 2nd time img will not change without refresh
+   //bgFileInput.files=null;
+}
+
 //DOM manipulation
 /**
  * msg string will be given where this generateMsg is being called.
@@ -296,12 +335,12 @@ let generateColorBox=(color)=>{
  */
 let displayAllColorBoxes=(parent,colors)=>{
     colors.forEach(color=>{
-    //if color valid color is not present box may generate if array size if fixed.
-    if(isValidHex(color.slice(1))){//isValidHex hex expects only 6 digit but randomly we generate with # so # need to be removed.
-        const colorBox=generateColorBox(color)
+    //if valid color is not present box may generate if array size is fixed.
+    if(color && isValidHex(color.slice(1))){//isValidHex expects only 6 digit but randomly we generate with #, so # need to be removed.
+    const colorBox=generateColorBox(color)
     parent.appendChild(colorBox)
     }
-    })
+    });
 }
 
 let removeChildColors=(parent)=>{
@@ -309,7 +348,13 @@ let removeChildColors=(parent)=>{
         parent.removeChild(parent.firstChild);
       }
 }
-
+const bgControllerFunc=()=>{
+    document.body.style.backgroundSize=document.getElementById("bg-size").value
+    document.body.style.backgroundRepeat=document.getElementById("bg-repeat").value
+    document.body.style.backgroundPosition=document.getElementById("bg-position").value
+    document.body.style.backgroundAttachment=document.getElementById("bg-attachment").value
+}
+//utils
 /**
  * check if input value is hex code or not
  @param {string} color //to set color as string..this will suggest all string method
