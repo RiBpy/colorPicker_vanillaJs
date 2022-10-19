@@ -354,7 +354,8 @@ const bgControllerFunc=()=>{
     document.body.style.backgroundPosition=document.getElementById("bg-position").value
     document.body.style.backgroundAttachment=document.getElementById("bg-attachment").value
 }
-//utils
+
+//utils function
 /**
  * check if input value is hex code or not
  @param {string} color //to set color as string..this will suggest all string method

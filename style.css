@@ -16,7 +16,7 @@ body {
 }
 
 .container {
-  width: 600px;
+  width: 60%;
   margin: 2rem auto;
   padding: 2rem;
   border-radius: 0.25rem;
@@ -284,4 +284,14 @@ label {
 }
 .select-group {
   margin-bottom: 1rem;
+}
+@media (max-width:534px) {
+  .container{
+    width: 95%;
+  }
+}
+@media (max-width:792px) {
+  .container{
+    width: 85%;
+  }
 }
